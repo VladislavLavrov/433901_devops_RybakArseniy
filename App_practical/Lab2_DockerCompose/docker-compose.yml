@@ -1,0 +1,28 @@
+services:
+  mariadb:
+    container_name: web-mariadb-16
+    hostname: mariadb
+    image: mariadb:10.5
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+      MARIADB_DATABASE: 16-WebCalculatorDb
+      MARIADB_USER: webdb
+      MARIADB_PASSWORD: password
+    ports:
+      - "53016:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    container_name: web-app-calculator-16
+    hostname: app
+    build: .
+    ports:
+      - "5516:5016"
+    depends_on:
+      mariadb:
+        condition: service_healthy

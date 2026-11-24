@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Калькулятор";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post" asp-controller="Calculator" asp-action="Calculate">
+    @Html.AntiForgeryToken()
+
+    <div style="margin: 15px 0;">
+        <input type="text" name="num1" placeholder="Число 1" required />
+
+        <select name="operation" required>
+            <option value="Add">Сложение (+)</option>
+            <option value="Subtract">Вычитание (-)</option>
+            <option value="Multiply">Умножение (*)</option>
+            <option value="Divide">Деление (/)</option>
+        </select>
+
+        <input type="text" name="num2" placeholder="Число 2" required />
+    </div>
+
+    <input type="submit" value="Рассчитать" />
+</form>
+
+@if (ViewBag.Result != null)
+{
+    <h3 style="color: darkgreen;">Результат: @ViewBag.Result</h3>
+}
+
+<footer style="margin-top: 50px; color: gray; border-top: 1px solid #ccc; padding-top: 10px;">
+    <p>Студент: <b>Рыбак Арсений</b> | Группа: <b>433901</b> | Вариант: <b>16</b></p>
+</footer>

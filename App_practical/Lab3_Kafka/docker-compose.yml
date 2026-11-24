@@ -1,0 +1,41 @@
+services:
+  mariadb:
+    container_name: web-mariadb-16
+    hostname: mariadb
+    image: mariadb:10.5
+    restart: "no"
+    mem_limit: 512m
+    cpus: 0.5
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?Required}
+      MARIADB_DATABASE: 16-WebCalculatorDb
+      MARIADB_USER: webdb
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:?Required}
+    ports:
+      - "127.0.0.1:53016:3306"
+    volumes:
+      - calculator16-kafka-db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  web:
+    container_name: web-app-calculator-16
+    hostname: app
+    build: .
+    restart: "no"
+    mem_limit: 384m
+    cpus: 0.5
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Server=mariadb;Port=3306;Database=16-WebCalculatorDb;Uid=webdb;Pwd=${MARIADB_PASSWORD:?Required};Character Set=utf8;ConvertZeroDateTime=True;"
+    ports:
+      - "5016:5016"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+volumes:
+  calculator16-kafka-db:
